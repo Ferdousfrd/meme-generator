@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Sixtyfour+Convergence&display=swap');
+
 * {
     box-sizing: border-box;
 }
@@ -31,11 +33,12 @@ body {
     font-size: 1.15rem;
     font-weight: 500;
     margin-right: 15px;
-    
+    cursor: pointer;
 }
 
 main {
     padding: 36px;
+
 }
 
 .form {
@@ -107,4 +110,20 @@ main {
 
 .top {
     top: 0;
+}
+
+.download--button {
+    font-family: "Karla", sans-serif;
+    border-radius: 5px;
+    background: linear-gradient(90.41deg, #711F8D 1.14%, #A818DA 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    height: 25px;
+    margin-top: 10px;
+}
+
+.about--para {
+    margin-left: 25px; 
+    
 }

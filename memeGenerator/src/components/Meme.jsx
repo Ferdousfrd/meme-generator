@@ -1,85 +1,98 @@
-import { useState,useEffect } from "react"
+import { useState, useEffect } from "react";
+import { toPng } from "html-to-image";              // Importing the toPng function from html-to-image
+import download from "downloadjs";                  // Importing download function from downloadjs
+import logo from "../assets/memeDemo.png";
 
-export default function Meme(){
-    
-    const[memeData, setMemeData] = useState([])
-    const[meme,setMeme] = useState({
+export default function Meme() {
+    const [memeData, setMemeData] = useState([]);   // State to hold meme data from the API
+
+    const [meme, setMeme] = useState({              // state for our meme obj
         topText: "",
         bottomText: "",
-        randomImgUrl : "http://i.imgflip.com/1bij.jpg"
-    })
+        randomImgUrl: logo 
+    });
 
-    useEffect(() => {                                                   // fetching the data and using useEffect so it runs only once
-        fetch("https://api.imgflip.com/get_memes")
-            .then(res => res.json())
-            .then(data => setMemeData(data.data.memes))
-        , []}
-    )
+    useEffect(() => {                                                   // using useEffect to stop stop side effects
+        fetch("https://api.imgflip.com/get_memes")                      // Fetching meme data from the API
+            .then((res) => res.json())
+            .then((data) => setMemeData(data.data.memes));
+    }, []);                                                             // Empty dependency array ensures this runs only once
 
-    function getMemeImage(event){
-
-        if(memeData.length>0){
-            const randomNumber = Math.floor(Math.random()* memeData.length)     // getting a randonm number
-            const imgUrl = memeData[randomNumber].url                           // using randmon number to ger random index in the array for random url
-            setMeme(prev=>{
-                return {
-                    ...prev,
-                    randomImgUrl : imgUrl
-                }
-
-            })         
-        }
-        else{
-            console.log("no data")
-        }
-    }
-
-    function changeMemeText(event){
-        const {name, value} = event.target                              // destructuring our event.target
-        setMeme(prev => {
-            return {
+    function getMemeImage() {
+        if (memeData.length > 0) {                                      // getting a random index then a random img from random indexed obj
+            const randomNumber = Math.floor(Math.random() * memeData.length);
+            const imgUrl = memeData[randomNumber].url;
+            setMeme((prev) => ({
                 ...prev,
-                [name] : value
-            }
-        })
+                randomImgUrl: imgUrl,                                   // Updating the meme image
+            }));
+        } else {
+            console.log("No data");
+        }
     }
-    
+
+    function changeMemeText(event) {
+        const { name, value } = event.target;                           // Destructuring the event.target
+        setMeme((prev) => ({
+            ...prev,
+            [name]: value,                                              // Updating text based on input field
+        }));
+    }
+
+    function downloadMeme() {
+        const memeElement = document.querySelector('.meme');            // Selecting the meme container
+
+        toPng(memeElement)                                              // Using html-to-image to convert the meme element to a PNG
+            .then((dataUrl) => {
+                download(dataUrl, 'my-meme.png');                       // Trigger the download
+            })
+            .catch((error) => {
+                console.error('Oops, something went wrong!', error);    // Error handling
+            });
+    }
 
     return (
         <main>
             <div className="form">
                 <label>Top Text
-                <input 
-                    type="text"
-                    className="form--input"
-                    name="topText"                              // gotta make sure this name is same as our state so we can update it 
-                    value={meme.topText}                        // making sure we have controlled comonent by connecting it to our state.
-                    onChange={changeMemeText}                   // trackiing every keystroke and running our function
-                />
+                    <input
+                        type="text"
+                        className="form--input"
+                        name="topText"                                  // Ensuring this name is the same as our state
+                        value={meme.topText}                            // Controlled component linked to state
+                        onChange={changeMemeText}                       // Tracking input changes
+                    />
                 </label>
 
                 <label>Bottom Text
-                <input 
-                    type="text"
-                    className="form--input"
-                    name="bottomText"
-                    value={meme.bottomText}
-                    onChange={changeMemeText}
-                />
+                    <input
+                        type="text"
+                        className="form--input"
+                        name="bottomText"
+                        value={meme.bottomText}
+                        onChange={changeMemeText}
+                    />
                 </label>
 
                 <button className="form--button" onClick={getMemeImage}>
                     Get a new meme image
                 </button>
-
             </div>
 
-            <div className="meme">
-                <img src={meme.randomImgUrl} alt="memeImage" className="meme--image"/>
+            {/* Meme container with background image */}
+            <div className="meme" style={{
+                backgroundImage: `url(${meme.randomImgUrl})`,
+                backgroundSize: 'cover',                            // Ensures the image covers the entire div
+                height: '500px',                                    
+                width: '500px',                                     
+
+            }}>
+                {/* Top and bottom text positioned over the image */}
                 <h2 className="meme--text top">{meme.topText}</h2>
-                <h2 className="meme--text bottom">{meme.bottomText}</h2>                
+                <h2 className="meme--text bottom">{meme.bottomText || "You dare?"}</h2>
             </div>
-            
+
+            <button className="download--button" onClick={downloadMeme}>Download Meme</button>
         </main>
-    )
+    );
 }
