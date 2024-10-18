@@ -21,6 +21,7 @@ A simple React application that allows users to create and download memes using 
 ## Technologies Used
 
 - **React**: A JavaScript library for building user interfaces.
+- **React-hooks**: useState, useEffect, useId for maintaining the appliction.
 - **html-to-image**: A library used to convert HTML elements into image formats.
 - **CSS**: For styling the application.
 
